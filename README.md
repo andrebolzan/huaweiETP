@@ -6,20 +6,20 @@ Alguns modelos que usam a MIB SiteMonitor, a SMU11B e SMU11C ou SMU02B e SMU02C 
 
 A retificadora Huawei gerenciável ETP48xx tem algumas variações desse modelo, com 2, 3 ate 6 modulos de 15A ate 75A , capacita máxima ate 450A
 
-Ela pode ser mono faixa (fase neutro 110 ou 220) ou fase fase fase (220 e 380A) ou trifásica 380A com ou sem neutro.
+Ela pode ser monofasico (fase neutro 110 ou 220) ou fase fase (220 e 380A) ou trifásica 380V com ou sem neutro.
 
-Essa informação sobre tipo de alimentação é importante para SMU por temos como monitor cada fase do balanceamento da carga na parte AC
+Essa informação sobre tipo de alimentação é importante para que SMU em sistemas trifasicos.
 
 "iserir imagem aqui"
 
 O módulo SMU e seus componentes
 
 1) Entrada AC
-   1.1) Monofase ou  trifase
+1.1) Monofase ou  trifase
 2) Barramento DC
 3) Fontes/Módulo DC
 4) Bateria - Salva vidas de Telecom
-    4.1) Balanceamento da carga 
+4.1) Balanceamento da carga 
 5) Borns e alarmes
 6) Melhorias etcs.
 
