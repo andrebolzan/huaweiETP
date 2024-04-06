@@ -10,18 +10,20 @@ Ela pode ser mono faixa (fase neutro 110 ou 220) ou fase fase fase (220 e 380A) 
 
 Essa informação sobre tipo de alimentação é importante para SMU por temos como monitor cada fase do balanceamento da carga na parte AC
 
-"iserir imagem"
-O módulo SMU gerência x elementos infernos
+"iserir imagem aqui"
 
-Entrada AC
-Monofase ou  trifase
-Barramento DC
-Fontes/Módulo DC
-Bateria 
-Balanceamento da carga 
-Borns e alarmes
+O módulo SMU e seus componentes
 
-- Entrada AC
+1) Entrada AC
+   1.1) Monofase ou  trifase
+2) Barramento DC
+3) Fontes/Módulo DC
+4) Bateria - Salva vidas de Telecom
+    4.1) Balanceamento da carga 
+5) Borns e alarmes
+6) Melhorias etcs.
+
+1) Entrada AC
 
 Vamos começar pela parte mais simples
 O módulo AC, responsável pela entrada de energia. 
@@ -33,7 +35,7 @@ O parâmetro o Status Operacional é a estrala desse modulo é quem diz se tem o
 Coletamos  como estatística Tensão (voltagem) e corrente (amperagem)
 Não consegui coletar os hertz, a frequência fica próxima versão, pois preciso do apoiada Huawei nesse ponto.
 
-2) 
+2) Barramento DC
 Barramento DC , famigerado BarBus (BB para os íntimos) o barrento de ônibus, tradução é feia, mas conceito é simple, é um Barramento que vai do começo ao fim (igual barra de segurança dos ônibus urbanos)
 
 
@@ -46,7 +48,7 @@ Esse modulo tem parâmetros importantes que é o Status Operacional, caso as dua
 
 Coletamos Status Operacional, Tensão(voltagem), Total da Corrente (voltagem), Total da Carga em Watts e 
 
-3) 
+3) Fontes DC
 Fonte DC , retificadora ou módulo DC, qualquer nome cabe aqui.
 
 Aqui não temos parâmetro para ajustar aqui, somente campo informativo de ‘alerta’ 
@@ -57,7 +59,7 @@ Aqui localizamos tensão/voltagem corrente individual dos módulos, Status Opera
 Coletamos, Tensão , corrente , temperatura e Status Operacional de maneira individual com prefixo F01 , F02 , F0X
 
 
-4)
+4) Bateria - Salva vidas de Telecom
 Bateria (String Bateria - serie de bateria)
 
 Aqui é onde fica pulo do gato, ajuste de tensão/voltagem do Barramento DC (Bar BUS)  é feito na bateria.
@@ -84,7 +86,7 @@ Corrente(amperagem) da bateria normalmente vai ficar em 0, pois ela está em flu
 Percentual de carga, retorna percentual (% ) de carga da bateria.
 
 
-5)
+5) Borns e alarmes
 Born de alarme, tem 2 conjuntos os auxiliares e os de ambiente
 No auxiliar tem vários contatos seco pra ser usado em “porta aberta”, sensor de fumaça, sensor de água, sinal de gerador partido, etc , sinais Verdadeiro e falso.
 
@@ -96,7 +98,7 @@ Os 2 borns para verificação da bateria devem ser instalado “no meio da bater
 
 Ainda não implementado.
 
-
+6) Melhorias etcs
 Proxima Versão
 
 Coletar hertz (frequência), que no Brasil é de 60Hz, na concessionária isso é “irrelevante”  na maior parte do tempo, mas normalmente um “problema” em geradores menores, principalmente os a gasolina que tende a ter grande variação.
