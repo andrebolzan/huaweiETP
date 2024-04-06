@@ -1,0 +1,519 @@
+zabbix_export:
+  version: '6.2'
+  date: '2024-04-06T19:21:52Z'
+  template_groups:
+    -
+      uuid: 7df96b18c230490a9a0a9e2307226338
+      name: Templates
+  templates:
+    -
+      uuid: 4735e4a751474b08997ec412ec0c8bef
+      template: 'Template retificadora Huawei - SMUxxx ETP48xx'
+      name: 'Template retificadora Huawei - SMUxxx ETP48xx'
+      description: |
+        Retificadora gerenciável Huawei ETP48xx  - ETP4860, ETP4860, ETP4890, ETP48400, ETP48200
+        
+        Modulo SMU11B, SMU11C, SMU02B, SMU02C
+        
+        Versao 0.8
+        por Andre Bolzan
+      groups:
+        -
+          name: Templates
+      items:
+        -
+          uuid: cc9f702ca59b44e9aec624ae93296612
+          name: 'AC - Entrada | Status operacional'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.2011.6.164.1.5.2.1.1.99.1
+          key: AC_EntradaStatus
+          value_type: FLOAT
+          description: 'Corrente AC - Entrada - Em teste'
+          valuemap:
+            name: 'Entrada AC - Status operacional'
+          tags:
+            -
+              tag: Retificadora
+              value: Retificadora
+          triggers:
+            -
+              uuid: 588d3243442d4a9d9b7ab4c18f8ff1ef
+              expression: 'last(/Template retificadora Huawei - SMUxxx ETP48xx/AC_EntradaStatus)=4 or last(/Template retificadora Huawei - SMUxxx ETP48xx/AC_EntradaStatus)=5'
+              name: 'AC - Entrada Fora Range'
+              priority: INFO
+            -
+              uuid: bc52f81ee06f42e481a8539dfed811d4
+              expression: 'last(/Template retificadora Huawei - SMUxxx ETP48xx/AC_EntradaStatus)=254 or last(/Template retificadora Huawei - SMUxxx ETP48xx/AC_EntradaStatus)=255'
+              name: 'AC - ERRO'
+              priority: DISASTER
+            -
+              uuid: d3bcf7d0b3b64990931363d4d7853c49
+              expression: 'last(/Template retificadora Huawei - SMUxxx ETP48xx/AC_EntradaStatus)=2 or last(/Template retificadora Huawei - SMUxxx ETP48xx/AC_EntradaStatus)=3'
+              name: 'AC - SEM ENERGIA'
+              priority: DISASTER
+        -
+          uuid: 209c11b1805b4329b1444b889dbda427
+          name: 'Bateria | Corrente'
+          type: SNMP_AGENT
+          snmp_oid: iso.3.6.1.4.1.2011.6.164.1.4.4.2.1.2.5
+          key: BateriaCorrente
+          delay: 30m
+          value_type: FLOAT
+          units: A
+          description: |
+            Normalmente fica em 0 A
+            Só tera valor caso energia acabe
+          preprocessing:
+            -
+              type: MULTIPLIER
+              parameters:
+                - '0.1'
+          tags:
+            -
+              tag: Retificadora
+              value: Retificadora
+        -
+          uuid: 7ec3b36debeb460aa41742132a5f6f0d
+          name: 'Bateria | AutonoMia Minutos'
+          type: SNMP_AGENT
+          snmp_oid: iso.3.6.1.4.1.2011.6.164.1.4.2.2.0
+          key: BateriaemAutonomiaMIB
+          delay: 30m
+          description: 'não sei se ''fucniona" retorna 1800 - 13 horas'
+          tags:
+            -
+              tag: Retificadora
+              value: Retificadora
+        -
+          uuid: 2326d318d436471694d38fabc8724499
+          name: 'Bateria | Capacidade Ah'
+          type: SNMP_AGENT
+          snmp_oid: iso.3.6.1.4.1.2011.6.164.1.4.1.13.0
+          key: BateriaemCapacidade
+          delay: 1d
+          trends: '0'
+          units: Ah
+          description: |
+            Tamanho do Bano em AmperesHoras
+            Usado para calcular autonomia
+            Forçar coleta caso altere o banco
+          tags:
+            -
+              tag: Retificadora
+              value: Retificadora
+        -
+          uuid: 67320872f7014879aee29b387ba493d9
+          name: 'Bateria | Em flutuacao ou recarga'
+          type: SNMP_AGENT
+          snmp_oid: iso.3.6.1.4.1.2011.6.164.1.4.4.2.1.2.5
+          key: BateriaemFlutuacao
+          delay: 30m
+          description: |
+            iso.3.6.1.4.1.2011.6.164.1.4.4.2.1.2.5
+            
+            ## veRIFICAR O QUE É
+            iso.3.6.1.4.1.2011.6.164.1.4.1.12.0
+          tags:
+            -
+              tag: Retificadora
+              value: Retificadora
+          triggers:
+            -
+              uuid: e6b765cb261a4ba8beae329cf99105fa
+              expression: 'last(/Template retificadora Huawei - SMUxxx ETP48xx/BateriaemFlutuacao)>0'
+              name: 'Bateria carregando'
+              priority: INFO
+            -
+              uuid: d8a961eb5c314668b98e50a7bf34d902
+              expression: 'last(/Template retificadora Huawei - SMUxxx ETP48xx/BateriaemFlutuacao)<0'
+              name: 'Bateria em uso'
+              priority: INFO
+        -
+          uuid: 897905ef59c84685b06efd50ee20dc0c
+          name: 'Bateria  | Capacidade do banco em percentual'
+          type: SNMP_AGENT
+          snmp_oid: iso.3.6.1.4.1.2011.6.164.1.4.2.10.0
+          key: BateriaPercentual
+          delay: 30m
+          units: '%'
+          description: 'Perceteu carda - Testa com Carga Eletronica'
+          tags:
+            -
+              tag: Retificadora
+              value: Retificadora
+        -
+          uuid: 775433539e5a4e849df3d7149a4d860c
+          name: 'DC - Baramento | Status operacional'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.2011.6.164.1.6.2.1.1.99.1
+          key: BBDCStatusOpercaional
+          description: |
+            MIB: 1.3.6.1.4.1.2011.6.164.1.6.2.1.1.99
+            
+            If the enumeration value is 1, it indicates that the site DC distribution uint is in the normal state;
+            If the enumeration value is 2, it indicates that DC voltage is over the upper alarm threshold;
+            If the enumeration value is 3, it indicates that DC voltage is under the lower alarm threshold;
+            If the enumeration value is 254, it indicates DC distribution uint alarm resume;
+            If the enumeration value is 255, it indicates DC distribution uint operation status unknown.
+          valuemap:
+            name: 'Barraemnto DC - Status Operacional'
+          tags:
+            -
+              tag: Entrada
+              value: Entrada
+            -
+              tag: Retificadora
+              value: Retificadora
+          triggers:
+            -
+              uuid: a4f43e39aa994b7da39279027dea3815
+              expression: 'last(/Template retificadora Huawei - SMUxxx ETP48xx/BBDCStatusOpercaional)=255'
+              name: 'Barramento DC - PROBLEMA Desconhecido'
+              priority: HIGH
+            -
+              uuid: 02aa5ef5162c46d38f38096caa8c4ce5
+              expression: 'last(/Template retificadora Huawei - SMUxxx ETP48xx/BBDCStatusOpercaional)=2 or last(/Template retificadora Huawei - SMUxxx ETP48xx/BBDCStatusOpercaional)=3'
+              name: 'Barramento DC - PROBLEMA Tensao fora Range'
+              priority: WARNING
+            -
+              uuid: e48ec891da004859a3a8e3159b75aadc
+              expression: 'last(/Template retificadora Huawei - SMUxxx ETP48xx/BBDCStatusOpercaional)=254'
+              name: 'Barramento DC Bus Bar - PROBLEMA Rertono FALHA'
+              priority: HIGH
+        -
+          uuid: 4b856bc1116a45859c6d067c7bc0de1d
+          name: 'DC - Baramento |  Carga Watts'
+          type: SNMP_AGENT
+          snmp_oid: iso.3.6.1.4.1.2011.6.164.1.6.1.5.0
+          key: BBloaDCWatts
+          delay: 30m
+          value_type: FLOAT
+          units: W
+          tags:
+            -
+              tag: Retificadora
+              value: Retificadora
+        -
+          uuid: b6f7d865b1a744bdab94a920d9e69452
+          name: 'DC - Baramento |  Carga Amperes'
+          type: SNMP_AGENT
+          snmp_oid: iso.3.6.1.4.1.2011.6.164.1.3.1.3.0
+          key: BBloadDCAmp
+          delay: 30m
+          value_type: FLOAT
+          description: 'LOAD "bar Bus" famos BB'
+          preprocessing:
+            -
+              type: MULTIPLIER
+              parameters:
+                - '0.1'
+          tags:
+            -
+              tag: Retificadora
+              value: Retificadora
+          triggers:
+            -
+              uuid: 6beae5ff6b524dd4afb5f4a934c40b18
+              expression: 'last(/Template retificadora Huawei - SMUxxx ETP48xx/BBloadDCAmp)>={$CARGA.DC.MAX}'
+              name: 'Load Acima do Maximo definido'
+              priority: WARNING
+            -
+              uuid: a081b4e6c0b9450bb634fda46e28bb55
+              expression: 'last(/Template retificadora Huawei - SMUxxx ETP48xx/BBloadDCAmp)<=1'
+              name: 'Load Baixo de 1A'
+              priority: WARNING
+            -
+              uuid: e6b0d10bf67a47c38c97bd96e75780e1
+              expression: 'last(/Template retificadora Huawei - SMUxxx ETP48xx/BBloadDCAmp)=0'
+              name: 'Sem Carga - Load 0A'
+              priority: DISASTER
+        -
+          uuid: af4309f6fb27404f9766bdc19aa4404d
+          name: 'DC - Baramento |  Tensao'
+          type: SNMP_AGENT
+          snmp_oid: iso.3.6.1.4.1.2011.6.164.1.3.1.6.0
+          key: BBTensaoDC
+          delay: 5m
+          value_type: FLOAT
+          units: V
+          description: 'BB - Tensao Voltagem'
+          preprocessing:
+            -
+              type: MULTIPLIER
+              parameters:
+                - '0.1'
+          tags:
+            -
+              tag: Retificadora
+              value: Retificadora
+        -
+          uuid: d7de1d3e3a4249f5833ae92312ad963d
+          name: 'AC - Entrada | Tensao Voltagem'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.2011.6.164.1.3.2.2.1.6.28672
+          key: entradaAC
+          delay: 5m
+          units: V
+          preprocessing:
+            -
+              type: MULTIPLIER
+              parameters:
+                - '0.1'
+          tags:
+            -
+              tag: Retificadora
+              value: Retificadora
+          triggers:
+            -
+              uuid: 3c646ba9d9d94c18ab34239c2e2d1772
+              expression: 'last(/Template retificadora Huawei - SMUxxx ETP48xx/entradaAC)<=90'
+              name: 'AC - Entrada BaixoVOLTAGEM'
+              priority: HIGH
+        -
+          uuid: 9b6c93e610d94068b4fdd0ca9219af65
+          name: 'AC - Entrada | Corrente'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.2011.6.164.1.5.1.3.0
+          key: EntradaACCorrente
+          delay: 5m
+          value_type: FLOAT
+          units: A
+          description: |
+            Corrente AC - Entrada - Em teste
+            
+            Coleta a cada 5 minutos porque a concessionária oscila!
+          preprocessing:
+            -
+              type: MULTIPLIER
+              parameters:
+                - '0.1'
+          tags:
+            -
+              tag: Retificadora
+              value: Retificadora
+          triggers:
+            -
+              uuid: 0f43a45d53bd42f88b389c3d656fd108
+              expression: 'last(/Template retificadora Huawei - SMUxxx ETP48xx/EntradaACCorrente)>={$CARGA.AC.MAX}'
+              name: 'AC -Carga/Load acima do Maximo definido'
+              priority: INFO
+        -
+          uuid: 0082de2e0653423da385d9ded48d290b
+          name: 'DC  | Fonte01  Status Operacional'
+          type: SNMP_AGENT
+          snmp_oid: iso.3.6.1.4.1.2011.6.164.1.3.2.2.1.99.28672
+          key: F01DCStatusOpercaional
+          description: |
+            MIB: 1.3.6.1.4.1.2011.6.164.1.6.2.1.1.99
+            
+            If the enumeration value is 1, it indicates that the site DC distribution uint is in the normal state;
+            If the enumeration value is 2, it indicates that DC voltage is over the upper alarm threshold;
+            If the enumeration value is 3, it indicates that DC voltage is under the lower alarm threshold;
+            If the enumeration value is 254, it indicates DC distribution uint alarm resume;
+            If the enumeration value is 255, it indicates DC distribution uint operation status unknown.
+          valuemap:
+            name: 'DC Fonte - StatusOperacional'
+          tags:
+            -
+              tag: Entrada
+              value: Entrada
+            -
+              tag: Retificadora
+              value: Retificadora
+        -
+          uuid: 65f88901e90840cfb0f8bf2e8c9f04ce
+          name: 'DC  | Fonte01  Temp'
+          type: SNMP_AGENT
+          snmp_oid: iso.3.6.1.4.1.2011.6.164.1.3.2.2.1.8.28672
+          key: F01Temp
+          delay: 10m
+          units: ºC
+          preprocessing:
+            -
+              type: MULTIPLIER
+              parameters:
+                - '0.1'
+          tags:
+            -
+              tag: Retificadora
+              value: Retificadora
+            -
+              tag: Type
+              value: Temp
+        -
+          uuid: 07596931757a407d941b284f1a5262e9
+          name: 'DC  | Fonte02  Status Operacional'
+          type: SNMP_AGENT
+          snmp_oid: iso.3.6.1.4.1.2011.6.164.1.3.2.2.1.99.28673
+          key: F02DCStatusOpercaional
+          description: |
+            MIB: 1.3.6.1.4.1.2011.6.164.1.6.2.1.1.99
+            
+            If the enumeration value is 1, it indicates that the site DC distribution uint is in the normal state;
+            If the enumeration value is 2, it indicates that DC voltage is over the upper alarm threshold;
+            If the enumeration value is 3, it indicates that DC voltage is under the lower alarm threshold;
+            If the enumeration value is 254, it indicates DC distribution uint alarm resume;
+            If the enumeration value is 255, it indicates DC distribution uint operation status unknown.
+          valuemap:
+            name: 'DC Fonte - StatusOperacional'
+          tags:
+            -
+              tag: Entrada
+              value: Entrada
+            -
+              tag: Retificadora
+              value: Retificadora
+        -
+          uuid: 79085b9548eb496680cfdd4b5a93be2d
+          name: 'DC  | Fonte01  Tensao'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.2011.6.164.1.3.2.2.1.3.28672
+          key: F1tensao
+          delay: 10m
+          value_type: FLOAT
+          units: V
+          preprocessing:
+            -
+              type: MULTIPLIER
+              parameters:
+                - '0.1'
+          tags:
+            -
+              tag: Retificadora
+              value: Retificadora
+          triggers:
+            -
+              uuid: a2f2a3f3b2e741e3b3c3041ea9324f17
+              expression: 'last(/Template retificadora Huawei - SMUxxx ETP48xx/F1tensao)<=50'
+              name: 'Tensão do barramento 50V F1'
+              priority: WARNING
+        -
+          uuid: 03652ba7cc0b4aff907c79f7040d676b
+          name: 'DC  | Fonte02  Temp'
+          type: SNMP_AGENT
+          snmp_oid: iso.3.6.1.4.1.2011.6.164.1.3.2.2.1.8.28673
+          key: F2Temp
+          delay: 10m
+          units: ºC
+          preprocessing:
+            -
+              type: MULTIPLIER
+              parameters:
+                - '0.1'
+          tags:
+            -
+              tag: Retificadora
+              value: Retificadora
+            -
+              tag: type
+              value: temp
+        -
+          uuid: a3ab3d32b91a461e90dc17ba2286fd16
+          name: 'DC  | Fonte02  Tensao'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.2011.6.164.1.3.2.2.1.3.28673
+          key: F2tensao
+          delay: 10m
+          value_type: FLOAT
+          units: V
+          preprocessing:
+            -
+              type: MULTIPLIER
+              parameters:
+                - '0.1'
+          tags:
+            -
+              tag: Retificadora
+              value: Retificadora
+          triggers:
+            -
+              uuid: 27c696906e0446a5bcad2771dcb8c457
+              expression: 'last(/Template retificadora Huawei - SMUxxx ETP48xx/F2tensao)<=50'
+              name: 'Tensão do barramento 50V F2'
+              priority: WARNING
+      tags:
+        -
+          tag: Device
+          value: Retificado
+      macros:
+        -
+          macro: '{$CARGA.AC.MAX}'
+          value: '10'
+          description: 'Car (Load) AC maximo'
+        -
+          macro: '{$CARGA.DC.MAX}'
+          value: '10'
+          description: 'Carga (load) AC maximo'
+      valuemaps:
+        -
+          uuid: 1350bb6eb0b845198cadcc0639695ba5
+          name: 'Barraemnto DC - Status Operacional'
+          mappings:
+            -
+              value: '1'
+              newvalue: 'Operacionao (OK - 1)'
+            -
+              value: '2'
+              newvalue: 'Subreotensao Acima do declarado (Wamming - 2)'
+            -
+              value: '3'
+              newvalue: 'SubTensao abaico do declarado (Wamming - 3)'
+            -
+              value: '254'
+              newvalue: 'Retorno de problema (info - 254)'
+            -
+              value: '255'
+              newvalue: 'Erro Desconhecido (Critical- 254)'
+        -
+          uuid: 4b642501fe8e49a0b821e093412b520e
+          name: 'DC Fonte - StatusOperacional'
+          mappings:
+            -
+              value: '1'
+              newvalue: 'Operacional (1)'
+            -
+              value: '2'
+              newvalue: 'falha no módulo (2)'
+            -
+              value: '3'
+              newvalue: 'proteção automática(3)'
+            -
+              value: '4'
+              newvalue: 'comunicacao módulo falhou(4)'
+            -
+              value: '5'
+              newvalue: 'Modulo desligado(5)'
+            -
+              value: '6'
+              newvalue: 'modulo  inválido(6)'
+            -
+              value: '7'
+              newvalue: 'Modulo nao Configurado(7)'
+            -
+              value: '254'
+              newvalue: 'Retorno de Falha (254)'
+            -
+              value: '255'
+              newvalue: 'Erro desconhcedio ( 255)'
+        -
+          uuid: 91ea40d267e94ac48832ed56b3d16e18
+          name: 'Entrada AC - Status operacional'
+          mappings:
+            -
+              value: '1'
+              newvalue: 'AC - OK'
+            -
+              value: '2'
+              newvalue: 'AC - Sem Alimentaocao'
+            -
+              value: '3'
+              newvalue: 'AC - Falta Fase'
+            -
+              value: '4'
+              newvalue: 'AC - SobreTensao'
+            -
+              value: '5'
+              newvalue: 'AC -subTensao'
+            -
+              value: '254'
+              newvalue: 'AC - COM ALARME'
